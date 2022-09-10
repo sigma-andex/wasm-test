@@ -1,6 +1,7 @@
 import { init, WASI } from "@wasmer/wasi";
 import { WasmFs } from "@wasmer/wasmfs";
 
+import fs from "fs";
 await init();
 
 let wasi = new WASI({
@@ -13,8 +14,11 @@ let wasi = new WASI({
   ],
 });
 
-const moduleBytes = fetch("./test.wasm");
-const module = await WebAssembly.compileStreaming(moduleBytes);
+const buf = fs.readFileSync('test.wasm');
+
+const module = await WebAssembly.compile(
+  new Uint8Array(buf)
+);
 // Instantiate the WASI module
 await wasi.instantiate(module, {});
 
